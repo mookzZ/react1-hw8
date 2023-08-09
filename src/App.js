@@ -1,25 +1,37 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect, useRef } from 'react'
 
-function App() {
+function BoredActivityApp() {
+  const [activity, setActivity] = useState('')
+  const isMounted = useRef(true)
+
+  useEffect(() => {
+    async function fetchActivity() {
+      try {
+        const response = await fetch('https://www.boredapi.com/api/activity')
+        const data = await response.json()
+        
+        if (isMounted.current) {
+          setActivity(data.activity)
+        }
+      } catch (error) {
+        console.error('Error fetching activity:', error)
+      }
+    }
+
+    fetchActivity()
+    
+    return () => {
+      isMounted.current = false
+    }
+  }, [])
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+      <div className="App">
+        <h1>Bored Activity App</h1>
+        <p>Feeling bored? Here's something to do:</p>
+        <p>{activity}</p>
+      </div>
+  )
 }
 
-export default App;
+export default BoredActivityApp
